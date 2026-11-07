@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Isuf Ali | Python Backend Developer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;0,700;1,400&family=Dancing+Script:wght@400;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    /* ── Santorini palette ───────────────────────── */
+    :root {
+      --azure:      #0A48AD;
+      --azure-dark: #083a8a;
+      --cream:      #f5f8ff;       /* light blue-white instead of warm cream */
+      --sand:       #EADBD3;       /* Sandstone */
+      --cloud:      #D0D5E8;       /* Cloud */
+      --muted-col:  #3a5080;       /* blue-muted instead of brown-soft */
+      --line:       rgba(10,72,173,.13);
+      --ease:       cubic-bezier(.2,.7,.2,1);
+      /* Liquid glass — azure tinted */
+      --lg: inset 0 1px 1px rgba(255,255,255,.88),
+            inset 0 -1px 1px rgba(10,72,173,.07),
+            inset 0 0 20px rgba(255,255,255,.22),
+            0 10px 28px rgba(10,72,173,.10);
+      --f-display: 'Lora', Georgia, serif;
+      --f-script:  'Dancing Script', cursive;
+      --f-body:    'Inter', system-ui, sans-serif;
+      --f-mono:    'JetBrains Mono', ui-monospace, monospace;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { background: var(--cream); scroll-behavior: smooth; scroll-padding-top: 96px; -webkit-text-size-adjust: 100%; }
+    body { color: #1a2e5a; font: 400 16px/1.75 var(--f-body); -webkit-font-smoothing: antialiased; overflow-x: clip; }
+    ::selection { background: var(--azure); color: #fff; }
+    img { max-width: 100%; display: block; }
+    h1,h2,h3 { font-family: var(--f-display); line-height: 1.1; letter-spacing: -.01em; text-wrap: balance; }
+    h1 { font-size: clamp(2.7rem,7vw,5rem); font-weight: 600; }
+    h2 { font-size: clamp(2rem,4.5vw,3.1rem); font-weight: 600; margin-bottom: 2.2rem; }
+    h3 { font-size: 1.6rem; font-weight: 700; margin-bottom: .4rem; }
+    a { color: inherit; text-decoration: none; }
+    a:focus-visible, .btn:focus-visible { outline: 2px solid var(--azure); outline-offset: 3px; }
+    .container { max-width: 1100px; margin: 0 auto; padding: 0 1.5rem; }
+    .accent { font-family: var(--f-script); font-weight: 400; font-style: normal; font-size: 1.3em; line-height: 1; color: var(--azure); letter-spacing: 0; padding-right: .1em; }
+    .muted { color: var(--muted-col); font-size: .92rem; }
+
+    /* ── Animated background — azure drifting glow + fine grid ── */
+    body::before {
+      content: "";
+      position: fixed; inset: 0; z-index: -2;
+      animation: drift 26s ease-in-out infinite alternate;
+      background:
+        radial-gradient(42vw 42vw at 8% 6%,  rgba(10,72,173,.22), transparent 62%),
+        radial-gradient(46vw 46vw at 94% 42%, rgba(208,213,232,.55), transparent 62%),
+        radial-gradient(36vw 36vw at 28% 96%, rgba(10,72,173,.13), transparent 62%);
+    }
+    body::after {
+      content: ""; position: fixed; inset: 0; z-index: -1; pointer-events: none;
+      background-size: 56px 56px;
+      background-image:
+        linear-gradient(rgba(10,72,173,.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(10,72,173,.05) 1px, transparent 1px);
+      -webkit-mask-image: radial-gradient(ellipse at 50% 25%, #000 15%, transparent 75%);
+      mask-image: radial-gradient(ellipse at 50% 25%, #000 15%, transparent 75%);
+    }
+    @keyframes drift { from{transform:translate3d(0,0,0) scale(1)} to{transform:translate3d(2%,-2%,0) scale(1.1)} }
+
+    .eyebrow { font: 500 .72rem var(--f-mono); letter-spacing: .18em; text-transform: uppercase; color: var(--azure); margin-bottom: .7rem; }
+    .section .eyebrow::before { content: "// "; opacity: .5; }
+
+    /* ── Liquid glass surface ── */
+    .nav, .card, .stats div, .photo, .btn.ghost {
+      background: linear-gradient(145deg, rgba(255,255,255,.30), rgba(240,245,255,.08));
+      border: 1px solid rgba(255,255,255,.60);
+      box-shadow: var(--lg);
+      -webkit-backdrop-filter: blur(20px) saturate(180%);
+      backdrop-filter: blur(20px) saturate(180%);
+    }
+
+    /* ── Navbar ── */
+    .nav {
+      position: sticky; top: 12px; z-index: 10;
+      width: min(1100px, calc(100% - 24px)); margin: 12px auto 0;
+      border-radius: 999px;
+      background: linear-gradient(145deg, rgba(255,255,255,.48), rgba(240,245,255,.25));
+    }
+    .nav .container { padding: 0 1.3rem; }
+    .nav-inner { display: flex; justify-content: space-between; align-items: center; gap: 1rem; height: 56px; }
+    .brand { display: flex; align-items: center; gap: .7rem; font: 700 1.35rem var(--f-display); flex-shrink: 0; }
+    .logo {
+      display: grid; place-items: center;
+      width: 32px; height: 32px; border-radius: 50%;
+      color: #fff; font-size: 1.05rem;
+      background: radial-gradient(circle at 30% 25%, #4a7fd4, var(--azure) 55%, var(--azure-dark));
+      box-shadow: inset 0 1px 1px rgba(255,255,255,.55), 0 4px 10px rgba(10,72,173,.4);
+    }
+    .nav nav { display: flex; gap: 1.3rem; }
+    .nav nav a {
+      position: relative; white-space: nowrap;
+      font: 500 .68rem var(--f-mono); letter-spacing: .1em; text-transform: uppercase;
+      color: var(--muted-col); transition: color .25s; padding: .3rem 0;
+    }
+    .nav nav a::after {
+      content: ""; position: absolute; left: 0; bottom: 0; width: 100%; height: 1px;
+      background: var(--azure); transform: scaleX(0); transform-origin: left; transition: transform .35s var(--ease);
+    }
+    .nav nav a:hover { color: #1a2e5a; }
+    .nav nav a:hover::after { transform: scaleX(1); }
+
+    /* ── Sections ── */
+    .section { padding: 6.5rem 0; }
+    .section.alt {
+      margin: 1rem 12px; border-radius: 40px;
+      border: 1px solid rgba(255,255,255,.55);
+      background: linear-gradient(160deg, rgba(255,255,255,.22), rgba(240,245,255,.06) 60%, rgba(10,72,173,.03));
+      box-shadow: inset 0 1px 1px rgba(255,255,255,.8), inset 0 0 40px rgba(255,255,255,.15), 0 20px 50px rgba(10,72,173,.06);
+    }
+    .hero { min-height: 90vh; display: grid; align-items: center; }
+    .hero-grid { display: grid; grid-template-columns: 1.2fr 1fr; gap: 3.5rem; align-items: center; padding-block: 3rem; }
+    .lead { font-size: 1.08rem; margin: 1.3rem 0 1.6rem; max-width: 33rem; color: var(--muted-col); }
+
+    /* ── Buttons ── */
+    .btns { display: flex; flex-wrap: wrap; gap: .55rem; }
+    .btn {
+      position: relative; isolation: isolate; overflow: hidden;
+      display: inline-flex; align-items: center; gap: .4rem;
+      padding: .38rem .9rem; border-radius: 999px;
+      font: 600 .62rem/1.4 var(--f-mono); letter-spacing: .12em; text-transform: uppercase;
+      color: #fff;
+      background: linear-gradient(180deg, #1a5bc4, var(--azure-dark));
+      border: 1px solid rgba(255,255,255,.22);
+      box-shadow: inset 0 1px 1px rgba(255,255,255,.4), inset 0 -2px 5px rgba(0,0,0,.2), 0 6px 14px rgba(10,72,173,.28);
+      transition: transform .4s var(--ease), box-shadow .4s;
+    }
+    .btn::before {
+      content: ""; position: absolute; z-index: -1; width: 62%; height: 150%;
+      right: -12%; bottom: -70%; border-radius: 50%;
+      background: radial-gradient(circle at 40% 40%, #6a9fe8, var(--azure) 45%, transparent 72%);
+      filter: blur(8px); opacity: .85; transition: transform .7s var(--ease), opacity .4s;
+    }
+    .btn::after { content: "→"; font-size: .8rem; transition: transform .35s var(--ease); }
+    .btn:hover { transform: translateY(-1px); box-shadow: inset 0 1px 1px rgba(255,255,255,.5), inset 0 -2px 5px rgba(0,0,0,.15), 0 10px 20px rgba(10,72,173,.35); }
+    .btn:hover::before { transform: translate(-45%,-28%) scale(1.3); opacity: 1; }
+    .btn:hover::after { transform: translateX(3px); }
+    .btn.ghost { color: #1a2e5a; }
+    .btn.ghost::before { opacity: .4; }
+    .btn.ghost:hover { box-shadow: var(--lg), 0 10px 20px rgba(10,72,173,.18); }
+    .btn.ghost:hover::before { opacity: .7; }
+    @media (pointer: coarse) { .btn { padding: .55rem 1rem; } }
+
+    /* ── Stats + photo ── */
+    .stats { display: grid; grid-template-columns: repeat(4,1fr); gap: .7rem; margin-top: 2.4rem; }
+    .stats div { border-radius: 18px; padding: .9rem .4rem; text-align: center; transition: transform .4s var(--ease); }
+    .stats div:hover { transform: translateY(-4px); }
+    .stats strong { display: block; font: 700 1.55rem/1.2 var(--f-display); color: var(--azure); }
+    .stats span { font: 500 .6rem var(--f-mono); letter-spacing: .08em; text-transform: uppercase; color: var(--muted-col); }
+
+    /* Photo with floating animation */
+    .photo {
+      position: relative; isolation: isolate;
+      aspect-ratio: 4/5; border-radius: 32px;
+      display: grid; place-items: center; overflow: hidden; padding: 10px;
+      animation: float 7s ease-in-out infinite;
+    }
+    .photo::before {
+      content: ""; position: absolute; inset: 10px; border-radius: 24px; z-index: -1;
+      background: linear-gradient(150deg, rgba(10,72,173,.88), rgba(74,127,212,.78) 55%, rgba(208,213,232,.9));
+    }
+    .photo img { width: 100%; height: 100%; object-fit: cover; object-position: center 15%; border-radius: 24px; }
+    .photo-initials { font: 700 italic 7rem var(--f-display); color: #fff; }
+    @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
+
+    /* ── Cards ── */
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%,250px),1fr)); gap: 1.4rem; }
+    .grid > .reveal { display: flex; } .grid .card { flex: 1; }
+    .card {
+      position: relative; isolation: isolate; overflow: hidden;
+      border-radius: 26px; padding: 1.7rem;
+      transition: transform .45s var(--ease), box-shadow .45s, border-color .45s, background .45s;
+    }
+    .card::before {
+      content: ""; position: absolute; left: 0; top: 0; width: 100%; height: 2px;
+      background: linear-gradient(90deg, var(--azure), transparent);
+      transform: scaleX(0); transform-origin: left; transition: transform .5s var(--ease);
+    }
+    .card::after {
+      content: ""; position: absolute; inset: 0; z-index: -1; border-radius: inherit; pointer-events: none;
+      opacity: .6; transition: opacity .45s;
+      background: linear-gradient(160deg, rgba(255,255,255,.42), transparent 38%), radial-gradient(60% 50% at 100% 100%, rgba(10,72,173,.10), transparent 70%);
+    }
+    .card:hover { transform: translateY(-6px); border-color: rgba(10,72,173,.3); box-shadow: var(--lg), 0 22px 44px rgba(10,72,173,.12); }
+    .card:hover::before { transform: scaleX(1); }
+    .card:hover::after { opacity: 1; }
+    .card.wide { margin-bottom: 1.4rem; } .card.wide:hover { transform: translateY(-3px); }
+    .card ul { list-style: none; margin-top: 1rem; display: grid; gap: .55rem; }
+    .card li { position: relative; padding-left: 1.3rem; }
+    .card li::before {
+      content: ""; position: absolute; left: 0; top: .72em;
+      width: 6px; height: 6px; background: var(--azure); border-radius: 1px; transform: rotate(45deg);
+    }
+    .num { font: 500 .85rem var(--f-mono); color: var(--azure); letter-spacing: .1em; }
+
+    /* Tags — sandstone tinted */
+    .tags { display: flex; flex-wrap: wrap; gap: .45rem; margin-top: 1.1rem; }
+    .tags span {
+      font: 500 .66rem var(--f-mono); letter-spacing: .04em;
+      padding: .2rem .65rem; border-radius: 999px;
+      background: rgba(234,219,211,.45); border: 1px solid rgba(208,213,232,.7);
+      box-shadow: inset 0 1px 1px rgba(255,255,255,.7);
+      transition: background .25s, color .25s, border-color .25s;
+    }
+    .tags span:hover { background: rgba(10,72,173,.12); border-color: rgba(10,72,173,.35); color: var(--azure); }
+
+    .link {
+      display: inline-block; margin-top: 1.1rem;
+      font: 600 .68rem var(--f-mono); letter-spacing: .1em; text-transform: uppercase;
+      color: var(--azure); transition: letter-spacing .3s var(--ease);
+    }
+    .link:hover { letter-spacing: .16em; }
+
+    /* ── Contact section ── */
+    .contact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
+    .contact-item { display: flex; align-items: center; gap: .8rem; margin-bottom: .9rem; }
+    .contact-icon {
+      width: 36px; height: 36px; flex-shrink: 0; border-radius: 10px;
+      background: rgba(10,72,173,.1); border: 1px solid rgba(10,72,173,.18);
+      display: flex; align-items: center; justify-content: center; font-size: 16px;
+    }
+    .contact-label { font: 500 .62rem var(--f-mono); letter-spacing: .1em; text-transform: uppercase; color: var(--muted-col); }
+    .contact-value { font-size: .92rem; color: #1a2e5a; font-weight: 500; }
+    .contact-value a { color: var(--azure); }
+    .contact-value a:hover { text-decoration: underline; }
+
+    /* ── Footer ── */
+    .footer {
+      text-align: center; padding: 2.2rem 1rem;
+      background: rgba(10,72,173,.88); color: #fff;
+      font: 500 .7rem var(--f-mono); letter-spacing: .12em; text-transform: uppercase;
+    }
+    .footer a { color: rgba(255,255,255,.7); }
+    .footer a:hover { color: #fff; }
+
+    /* ── Scroll reveal ── */
+    .reveal { opacity: 0; transform: translateY(26px); transition: opacity .9s var(--ease), transform .9s var(--ease); }
+    .reveal.in { opacity: 1; transform: none; }
+
+    /* ── Responsive ── */
+    @media (min-width: 1500px) { html { font-size: 17px; } .container { max-width: 1280px; } .nav { width: min(1280px, calc(100% - 24px)); } }
+    @media (max-width: 1024px) { .hero-grid { gap: 2.5rem; } .section { padding: 5.5rem 0; } }
+    @media (max-width: 860px) {
+      .hero { min-height: auto; } .hero-grid { grid-template-columns: 1fr; padding-block: 2rem 1rem; }
+      .photo { max-width: 320px; margin: 0 auto; width: 100%; }
+      .brand { font-size: 0; gap: 0; } .logo { font-size: 1.05rem; }
+      .nav nav { overflow-x: auto; scrollbar-width: none; -webkit-overflow-scrolling: touch; gap: 1.1rem; }
+      .nav nav::-webkit-scrollbar { display: none; }
+      .contact-grid { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 640px) {
+      .container { padding: 0 1.1rem; } .section { padding: 4rem 0; } h2 { margin-bottom: 1.6rem; }
+      .section.alt { margin: .6rem 8px; border-radius: 28px; }
+      .stats { grid-template-columns: repeat(2,1fr); } .card { padding: 1.3rem; border-radius: 22px; }
+      .lead { font-size: 1rem; }
+    }
+    @media (max-width: 360px) { body { font-size: 15px; } .btns { gap: .4rem; } }
+    @media (prefers-reduced-motion: reduce) {
+      .reveal { opacity: 1; transform: none; transition: none; }
+      html { scroll-behavior: auto; } body::before, .photo { animation: none; }
+      * { transition-duration: .01ms !important; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── NAV ── -->
+<header class="nav">
+  <div class="container">
+    <div class="nav-inner">
+      <div class="brand">
+        <div class="logo">I</div>
+        Isuf Ali
+      </div>
+      <nav>
+        <a href="#home">Home</a>
+        <a href="#about">About</a>
+        <a href="#experience">Career</a>
+        <a href="#projects">Portfolio</a>
+        <a href="#skills">Toolbox</a>
+        <a href="#education">Learning</a>
+        <a href="#contact">Contact</a>
+      </nav>
+    </div>
+  </div>
+</header>
+
+<!-- ── HERO ── -->
+<section id="home" class="hero">
+  <div class="container hero-grid">
+    <div class="reveal">
+      <p class="eyebrow">Python Backend Developer (SDE)</p>
+      <h1>Hello, I'm <span class="accent">Isuf Ali</span></h1>
+      <p class="lead">Python Backend Developer building reliable REST APIs with Django and LangChain, and working on AI systems like multi-agent LLMs, vector search, and financial models.</p>
+      <div class="btns">
+        <a class="btn" href="#contact">Say Hello!</a>
+        <a class="btn ghost" href="mailto:aliyusuf09349@gmail.com">Get In Touch</a>
+      </div>
+      <div class="stats">
+        <div><strong>2027</strong><span>B.Tech Graduation</span></div>
+        <div><strong>6+ Mo</strong><span>At Cognative Computing</span></div>
+        <div><strong>2+</strong><span>Projects Built</span></div>
+        <div><strong>Software Testing</strong><span>Exploring</span></div>
+      </div>
+    </div>
+    <div class="reveal" style="transition-delay:.15s">
+      <div class="photo">
+        <!-- Place your photo as photo.jpg in this folder -->
+        <img
+          src="photo.jpg"
+          alt="Isuf Ali"
+          onerror="this.style.display='none'; this.nextElementSibling.style.display='block';"
+        />
+        <span class="photo-initials" style="display:none">IA</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── ABOUT ── -->
+<section id="about" class="section alt">
+  <div class="container">
+    <p class="eyebrow">About</p>
+    <h2>Python developer who loves clean, scalable code</h2>
+    <div class="reveal">
+      <div class="card wide">
+        <p>I'm a Computer Science Engineering student and Python Backend Developer Intern at Cognative Computing, working with Python, Django, Django REST Framework and SQL to build and maintain reliable software systems.</p>
+        <br/>
+        <p>Alongside backend engineering, I'm working on AI systems — architecting a 30+ agent LLM system using LangChain with a master orchestrator for financial analysis, and migrating vector stores to pgVector for semantic search. I write clean, maintainable code and follow structured development practices.</p>
+        <br/>
+        <p class="muted">Bhopal, Madhya Pradesh, India</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── EXPERIENCE ── -->
+<section id="experience" class="section">
+  <div class="container">
+    <p class="eyebrow">Career</p>
+    <h2>Experience</h2>
+
+    <div class="reveal">
+      <div class="card wide">
+        <h3>Python Backend Developer Intern</h3>
+        <p class="muted">Cognative Computing · 2025 – 2026</p>
+        <ul>
+          <li>Architected a 30+ agent LLM system using Python and LangChain with a master orchestrator routing financial queries across DCF, DDM, LBO, EVA, and APV models.</li>
+          <li>Built production-grade REST APIs with Django REST Framework; integrated a 3-tier data pipeline (OpenBB → CSV cache → yfinance).</li>
+          <li>Migrated vector store from ChromaDB to pgVector on PostgreSQL for semantic search across large financial datasets.</li>
+          <li>Implemented WACC computation, sensitivity analysis, and beta adjustment models using Damodaran frameworks.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── PROJECTS ── -->
+<section id="projects" class="section alt">
+  <div class="container">
+    <p class="eyebrow">Portfolio</p>
+    <h2>Projects</h2>
+    <div class="grid">
+
+      <div class="reveal">
+        <div class="card">
+          <h3>AI-Powered Financial Analysis Platform</h3>
+          <p>Multi-agent AI system covering valuation, corporate finance, and acquisition modeling using Damodaran frameworks. 30+ agents with a master orchestrator and REST API backend. 3-tier data pipeline + pgVector for semantic search.</p>
+          <div class="tags">
+            <span>Python</span><span>Streamlit</span><span>Django REST Framework</span>
+            <span>LangChain</span><span>PostgreSQL</span><span>pgVector</span>
+            <span>OpenBB</span><span>yfinance</span>
+          </div>
+          <span class="link" style="cursor:default; color:var(--muted-col);">🔒 Private Repository</span>
+        </div>
+      </div>
+
+      <div class="reveal" style="transition-delay:.1s">
+        <div class="card">
+          <h3>Incident Management System (IMS)</h3>
+          <p>Backend system for reporting, tracking and resolving incidents across roles. JWT authentication and role-based access control for Admins, POCs and Employees, with APIs for incident creation, assignment, status updates and resolution.</p>
+          <div class="tags">
+            <span>Python</span><span>Django</span><span>DRF</span>
+            <span>JWT</span><span>SQL</span><span>RBAC</span>
+          </div>
+          <a class="link" href="https://github.com/isuf04/Incident-Management-System-DRF" target="_blank" rel="noreferrer">View on GitHub →</a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ── SKILLS ── -->
+<section id="skills" class="section">
+  <div class="container">
+    <p class="eyebrow">Toolbox</p>
+    <h2>Technical Skills</h2>
+    <div class="grid">
+
+      <div class="reveal">
+        <div class="card">
+          <h3>Languages</h3>
+          <div class="tags"><span>Python</span><span>SQL</span><span>HTML,CSS ,JavaScript(Basic)</span></div>
+        </div>
+      </div>
+
+      <div class="reveal" style="transition-delay:.1s">
+        <div class="card">
+          <h3>Backend &amp; APIs</h3>
+          <div class="tags"><span>Django</span><span>Django REST Framework</span><span>REST APIs</span><span>LangChain</span><span>Streamlit</span></div>
+        </div>
+      </div>
+
+      <div class="reveal" style="transition-delay:.2s">
+        <div class="card">
+          <h3>Databases &amp; Tools</h3>
+          <div class="tags"><span>MySQL</span><span>SQLite</span><span>pgVector</span><span>ChromaDB</span><span>ORM</span><span>Git</span><span>GitHub</span><span>Postman</span><span>Supabase</span><span>VS Code</span></div>
+        </div>
+      </div>
+
+      <div class="reveal" style="transition-delay:.3s">
+        <div class="card">
+          <h3>AI &amp; Data</h3>
+          <div class="tags"><span>Multi-Agent Systems</span><span>LLM Agents</span><span>OpenBB</span><span>yfinance</span><span>Vector Search</span></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ── WORK PROCESS ── -->
+<section class="section alt">
+  <div class="container">
+    <p class="eyebrow">Method</p>
+    <h2>Work Process</h2>
+    <div class="grid">
+      <div class="reveal">
+        <div class="card center">
+          <p class="num">01</p>
+          <h3>Understand</h3>
+          <p>Clarify requirements and edge cases before writing a single line of code.</p>
+        </div>
+      </div>
+      <div class="reveal" style="transition-delay:.1s">
+        <div class="card center">
+          <p class="num">02</p>
+          <h3>Design</h3>
+          <p>Plan models, API endpoints, agent architecture, and data flow.</p>
+        </div>
+      </div>
+      <div class="reveal" style="transition-delay:.2s">
+        <div class="card center">
+          <p class="num">03</p>
+          <h3>Build</h3>
+          <p>Write clean, readable code with proper structure and documentation.</p>
+        </div>
+      </div>
+      <div class="reveal" style="transition-delay:.3s">
+        <div class="card center">
+          <p class="num">04</p>
+          <h3>Ship</h3>
+          <p>Test thoroughly, review edge cases, and deliver reliable software.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── EDUCATION ── -->
+<section id="education" class="section">
+  <div class="container">
+    <p class="eyebrow">Learning</p>
+    <h2>Education</h2>
+    <div class="reveal">
+      <div class="card wide">
+        <h3>All Saint's College of Technology (RGPV), Bhopal</h3>
+        <p class="muted">Bachelor of Technology, Computer Science Engineering</p>
+        <p class="muted">2023 – 2027 · CGPA 7.6 / 10</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── CONTACT ── -->
+<section id="contact" class="section alt">
+  <div class="container">
+    <p class="eyebrow">Contact</p>
+    <h2>Let's work together</h2>
+    <div class="reveal">
+      <div class="card wide">
+        <p style="margin-bottom:1.6rem; color:var(--muted-col);">I am open to internships and entry-level backend roles. Feel free to reach out!</p>
+        <div class="contact-grid">
+          <div>
+            <div class="contact-item">
+              <div class="contact-icon">✉</div>
+              <div>
+                <div class="contact-label">Email</div>
+                <div class="contact-value"><a href="mailto:aliyusuf09349@gmail.com">aliyusuf09349@gmail.com</a></div>
+              </div>
+            </div>
+            <div class="contact-item">
+              <div class="contact-icon">📞</div>
+              <div>
+                <div class="contact-label">Phone</div>
+                <div class="contact-value">+91 9117949021</div>
+              </div>
+            </div>
+            <div class="contact-item">
+              <div class="contact-icon">🔗</div>
+              <div>
+                <div class="contact-label">LinkedIn</div>
+                <div class="contact-value"><a href="https://www.linkedin.com/in/isufali04/" target="_blank">linkedin.com/in/isufali04</a></div>
+              </div>
+            </div>
+            <div class="contact-item">
+              <div class="contact-icon">⌥</div>
+              <div>
+                <div class="contact-label">GitHub</div>
+                <div class="contact-value"><a href="https://github.com/isuf04" target="_blank">github.com/isuf04</a></div>
+              </div>
+            </div>
+          </div>
+          <div>
+            <form onsubmit="handleSubmit(event)" style="display:flex;flex-direction:column;gap:1rem;">
+              <div>
+                <label style="font:.5rem var(--f-mono);text-transform:uppercase;letter-spacing:.1em;color:var(--muted-col);display:block;margin-bottom:.4rem;">Name</label>
+                <input type="text" placeholder="Your name" required
+                  style="width:100%;padding:.65rem 1rem;border-radius:12px;border:1px solid var(--line);background:rgba(255,255,255,.55);font:500 .95rem var(--f-body);color:#1a2e5a;outline:none;transition:border .2s;"
+                  onfocus="this.style.borderColor='var(--azure)'" onblur="this.style.borderColor='var(--line)'"/>
+              </div>
+              <div>
+                <label style="font:.5rem var(--f-mono);text-transform:uppercase;letter-spacing:.1em;color:var(--muted-col);display:block;margin-bottom:.4rem;">Email</label>
+                <input type="email" placeholder="your@email.com" required
+                  style="width:100%;padding:.65rem 1rem;border-radius:12px;border:1px solid var(--line);background:rgba(255,255,255,.55);font:500 .95rem var(--f-body);color:#1a2e5a;outline:none;transition:border .2s;"
+                  onfocus="this.style.borderColor='var(--azure)'" onblur="this.style.borderColor='var(--line)'"/>
+              </div>
+              <div>
+                <label style="font:.5rem var(--f-mono);text-transform:uppercase;letter-spacing:.1em;color:var(--muted-col);display:block;margin-bottom:.4rem;">Message</label>
+                <textarea placeholder="Hi Isuf, I'd like to connect about..." required rows="4"
+                  style="width:100%;padding:.65rem 1rem;border-radius:12px;border:1px solid var(--line);background:rgba(255,255,255,.55);font:500 .95rem var(--f-body);color:#1a2e5a;outline:none;resize:vertical;transition:border .2s;"
+                  onfocus="this.style.borderColor='var(--azure)'" onblur="this.style.borderColor='var(--line)'"></textarea>
+              </div>
+              <button type="submit" class="btn" style="align-self:flex-start;">Send Message</button>
+              <p id="form-ok" style="display:none;color:var(--azure);font:.7rem var(--f-mono);font-weight:600;">✓ Message sent! I'll get back to you soon.</p>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── FOOTER ── -->
+<footer class="footer">
+  © 2026 Isuf Ali &nbsp;·&nbsp; 2026 &nbsp;·&nbsp;
+  <a href="https://github.com/isuf04" target="_blank">GitHub</a> &nbsp;·&nbsp;
+  <a href="https://www.linkedin.com/in/isufali04/" target="_blank">LinkedIn</a>
+</footer>
+
+<!-- ── Scroll reveal JS ── -->
+<script>
+  // Intersection Observer for reveal
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); } });
+  }, { threshold: 0.08 });
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+  // Form submit
+  function handleSubmit(e) {
+    e.preventDefault();
+    document.getElementById('form-ok').style.display = 'block';
+    e.target.reset();
+    setTimeout(() => { document.getElementById('form-ok').style.display = 'none'; }, 5000);
+  }
+
+  // Active nav highlight
+  const sections = document.querySelectorAll('section[id], section.section[id]');
+  const navLinks = document.querySelectorAll('.nav nav a');
+  window.addEventListener('scroll', () => {
+    let cur = '';
+    document.querySelectorAll('[id]').forEach(s => {
+      if (window.scrollY >= s.offsetTop - 90) cur = s.id;
+    });
+    navLinks.forEach(a => {
+      const active = a.getAttribute('href') === '#' + cur;
+      a.style.color = active ? 'var(--azure)' : '';
+      a.style.setProperty('--active', active ? '1' : '0');
+    });
+  });
+</script>
+</body>
+</html>
